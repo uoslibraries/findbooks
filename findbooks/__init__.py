@@ -7,3 +7,5 @@ have already been digitised
 """
 
 from findbooks.item import Item
+from findbooks.hathichecker import HathiChecker
+from findbooks.iachecker import IaChecker
