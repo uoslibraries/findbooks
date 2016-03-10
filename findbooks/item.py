@@ -36,8 +36,12 @@ class Item:
                 self.marc = marc
 
     def _get_title(self):
-        # strip trailing '/' from subfield 'a' only results
-        title = self.record.title().strip(" /")
+        if self.record['245']:
+            title = self.record['245']['a'].strip(' /:,')
+        return title
+
+    def _get_long_title(self):
+        title = self.record.title().strip(' /:,')
         return title
 
     def _get_author(self):
@@ -69,14 +73,14 @@ class Item:
         else:
             return None
 
-    def get_marc_fields(self):
+    def get_marc_fields(self, len_title="short"):
         self._get_marc()
         if self.marc:
             with io.BytesIO(self.marc.encode('utf-8')) as fh:
                 reader = MARCReader(fh)
                 for record in reader:
                     self.record = record
-                    self.title = self._get_title()
+                    self.title = self._get_title() if len_title == "short" else self._get_long_title()
                     self.author = self._get_author()
                     self.year = self._get_year()
 
