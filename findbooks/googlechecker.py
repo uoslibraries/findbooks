@@ -4,8 +4,9 @@ from findbooks.checker import *
 
 class GoogleChecker(Checker):
 
-    def __inti__(self):
+    def __init__(self, key):
         self.query_url = None
+        self.key = key
 
     def _build_query(self, item):
         baseurl = 'https://www.googleapis.com/books/v1/volumes?'
@@ -18,7 +19,11 @@ class GoogleChecker(Checker):
                   'inauthor%3A',
                   urllib.parse.quote_plus(str(item.author)) if item.author else '',
                   '&',
-                  'filter=full']
+                  'filter=full',
+                  '&',
+                  'key=' + self.key,
+                  '&',
+                  'country=GB']
         self.query_url = baseurl + "".join(params)
 
     def check(self, item):
@@ -41,7 +46,7 @@ class GoogleChecker(Checker):
                     docs = resp['items']
                     for result in docs:
                         identifier = result['id']
-                        record_url = result['canonicalVolumeLink']
+                        record_url = result['volumeInfo']['canonicalVolumeLink']
                         records[identifier] = record_url
                     if records:
                         for record in records.keys():

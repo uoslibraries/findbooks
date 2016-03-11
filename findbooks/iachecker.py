@@ -4,7 +4,7 @@ from findbooks.checker import *
 
 class IaChecker(Checker):
 
-    def __inti__(self):
+    def __init__(self):
         self.query_url = None
 
     def _build_query(self, item):
