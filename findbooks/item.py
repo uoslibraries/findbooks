@@ -37,11 +37,11 @@ class Item:
 
     def _get_title(self):
         if self.record['245']:
-            title = self.record['245']['a'].strip(' /:,')
+            title = self.record['245']['a'].strip(' /:,.')
         return title
 
     def _get_long_title(self):
-        title = self.record.title().strip(' /:,')
+        title = self.record.title().strip(' /:,.')
         return title
 
     def _get_author(self):
@@ -64,16 +64,16 @@ class Item:
                 if ch in nums:
                     new_date += ch
             # dates should have '1' as the first char
-            if not new_date[0] == 1:
+            if not new_date[0] == "1":
                 return None
             # dates should eb 4 chars long
-            if not len(date) == 4:
+            if not len(new_date) == 4:
                 return None
             return new_date
         else:
             return None
 
-    def get_marc_fields(self, len_title="short"):
+    def get_marc_fields(self, len_title):
         self._get_marc()
         if self.marc:
             with io.BytesIO(self.marc.encode('utf-8')) as fh:

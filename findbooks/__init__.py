@@ -10,3 +10,4 @@ from findbooks.item import Item
 from findbooks.hathichecker import HathiChecker
 from findbooks.iachecker import IaChecker
 from findbooks.googlechecker import GoogleChecker
+from findbooks.jstorchecker import JstorChecker
