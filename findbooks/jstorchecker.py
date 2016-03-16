@@ -37,25 +37,22 @@ class JstorChecker(Checker):
             self._build_query(item)
             with urllib.request.urlopen(self.query_url) as response:
                 html = response.read().decode('utf-8')
-                if 'class="error"' in html:
-                    # 'class="error"' indicates no hits
+                if '<ul class="results_item">' not in html:
                     return item, hits
                 else:
                     # get record urls for each hit on page 1
-                    matches = [m.start() for m in re.finditer('<a href="/Record/', html)]
+                    matches = [m.start() for m in re.finditer('<a class="title" href="', html)]
                     records = dict()
                     for match in matches:
-                        start = match + 9
-                        end = match +26
-                        record_url = 'http://catalog.hathitrust.org' + html[start:end]
-                        hathi_ident = html[start+8:end]
-                        records[hathi_ident] = record_url
+                        start = match + 23
+                        end = html.find('" target=', start)
+                        record_url = html[start:end]
+                        jstor_ident = record_url.split("/")[-1]
+                        records[jstor_ident] = record_url
                     if records:
                         for record in records.keys():
                             with urllib.request.urlopen(records[record]) as response:
                                 html = response.read().decode('utf-8')
-                                if 'class="rights-pd fulltext"' in html:
+                                if '<div id="article_view_content' in html:
                                     hits.append(records[record])
         return item, hits
-
-jstor = JstorChecker()

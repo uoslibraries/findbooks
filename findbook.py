@@ -29,8 +29,8 @@ def checkCollection(barcodes, checker, hits, errors, len_title="short"):
 def report(hits, errors, path=None):
     if not path:
         path = os.getcwd()
-    hits_path = os.path.join(path, "hits-" + time.strftime("%Y%m%d%H%M%S", time.localtime()))
-    errors_path = os.path.join(path, "errors-" + time.strftime("%Y%m%d%H%M%S", time.localtime()))
+    hits_path = os.path.join(path, "hits-" + time.strftime("%Y%m%d%H%M%S", time.localtime())) + ".txt"
+    errors_path = os.path.join(path, "errors-" + time.strftime("%Y%m%d%H%M%S", time.localtime())) + ".txt"
     with open(hits_path, 'a') as fout:
         for key in hits.keys():
             msg = "Barcode: %s found at URLs: %s\n" % (key, ", ".join(hits[key]))
@@ -42,39 +42,45 @@ def report(hits, errors, path=None):
             fout.write(msg)
     print("Errors written to: %s" % errors_path)
 
+def checkAll(barcodes, hits, errors):
+        ################################################################
+        ###                         HATHI
+        ################################################################
+        h = HathiChecker()
+        hits, errors = checkCollection(barcodes, h, hits, errors, len_title="short")
+        ################################################################
+        ###                    INTERNET ARCHIVE
+        ################################################################
+        i = IaChecker()
+        hits, errors = checkCollection(barcodes, i, hits, errors, len_title="short")
+        ################################################################
+        ###                         JSTOR
+        ################################################################
+        j = JstorChecker()
+        hits, errors = checkCollection(barcodes, j, hits, errors, len_title="short")
+        ################################################################
+        ###                      GOOGLE BOOKS
+        ################################################################
+        with open('google-api-key.txt', 'r') as fin:
+            key = fin.read()
+        g = GoogleChecker(key)
+        hits, errors = checkCollection(barcodes, g, hits, errors, len_title="short")
+        return hits, errors
 
 def main():
     hits = dict()
     errors = dict()
     barcodes = []
-    with open(r'C:\Scanning\find-vols\not_online.txt', 'r') as fin:
+    with open('not_online_1.txt', 'r') as fin:
         for line in fin:
             barcodes.append(line.strip())
-    ################################################################
-    ###                         HATHI
-    ################################################################
-    #h = HathiChecker()
-    #hits, errors = checkCollection(barcodes, h, hits, errors, len_title="short")
-    ################################################################
-    ###                    INTERNET ARCHIVE
-    ################################################################
-    #i = IaChecker()
-    #hits, errors = checkCollection(barcodes, i, hits, errors, len_title="short")
-    ################################################################
-    ###                         JSTOR
-    ################################################################
-    j = JstorChecker()
-    hits, errors = checkCollection(barcodes, j, hits, errors, len_title="short")
-    ################################################################
-    ###                      GOOGLE BOOKS
-    ################################################################
-    #with open(r'C:\Scanning\find-vols\google-api-key.txt', 'r') as fin:
-    #    key = fin.read()
-    #g = GoogleChecker(key)
-    #hits, errors = checkCollection(barcodes, g, hits, errors, len_title="short")
-    ################################################################
-    ###                         REPORT
-    ################################################################
-    report(hits, errors, path=r"C:\Scanning\IA-API")
+    hits, errors = checkAll(barcodes, hits, errors)
+    time.sleep(86400)#24 hrs
+    barcodes = []
+    with open('not_online_2.txt', 'r') as fin:
+        for line in fin:
+            barcodes.append(line.strip())
+    hits, errors = checkAll(barcodes, hits, errors)
+    report(hits, errors)
 
 main()
