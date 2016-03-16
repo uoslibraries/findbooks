@@ -47,24 +47,24 @@ def checkAll(barcodes, hits, errors):
         ###                         HATHI
         ################################################################
         h = HathiChecker()
-        hits, errors = checkCollection(barcodes, h, hits, errors, len_title="short")
+        hits, errors = checkCollection(barcodes, h, hits, errors, len_title="long")
         ################################################################
         ###                    INTERNET ARCHIVE
         ################################################################
         i = IaChecker()
-        hits, errors = checkCollection(barcodes, i, hits, errors, len_title="short")
+        hits, errors = checkCollection(barcodes, i, hits, errors, len_title="long")
         ################################################################
         ###                         JSTOR
         ################################################################
-        j = JstorChecker()
-        hits, errors = checkCollection(barcodes, j, hits, errors, len_title="short")
+        #j = JstorChecker()
+        #hits, errors = checkCollection(barcodes, j, hits, errors, len_title="short")
         ################################################################
         ###                      GOOGLE BOOKS
         ################################################################
         with open('google-api-key.txt', 'r') as fin:
             key = fin.read()
         g = GoogleChecker(key)
-        hits, errors = checkCollection(barcodes, g, hits, errors, len_title="short")
+        hits, errors = checkCollection(barcodes, g, hits, errors, len_title="long")
         return hits, errors
 
 def main():

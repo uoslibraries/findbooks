@@ -54,5 +54,6 @@ class JstorChecker(Checker):
                             with urllib.request.urlopen(records[record]) as response:
                                 html = response.read().decode('utf-8')
                                 if '<div id="article_view_content' in html:
-                                    hits.append(records[record])
+                                    if '<span class="lookslikeh2 pll">PREVIEW </span>' not in html:
+                                        hits.append(records[record])
         return item, hits
